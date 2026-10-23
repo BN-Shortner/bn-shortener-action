@@ -4,7 +4,7 @@ Shorten links and Launch Check them in a workflow. A `check` fails the job when 
 down, broken redirects, missing UTM tags, previews...), so a campaign link never goes out broken.
 
 ```yaml
-- uses: broadnet/shortener-action@v1
+- uses: BN-Shortner/bn-shortener-action@v1
   id: link
   with:
     api-key: ${{ secrets.BN_API_KEY }}
@@ -13,7 +13,7 @@ down, broken redirects, missing UTM tags, previews...), so a campaign link never
     tags: release
 - run: echo "Short link: ${{ steps.link.outputs.short-url }}"
 
-- uses: broadnet/shortener-action@v1
+- uses: BN-Shortner/bn-shortener-action@v1
   with:
     api-key: ${{ secrets.BN_API_KEY }}
     command: check
