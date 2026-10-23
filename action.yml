@@ -1,0 +1,65 @@
+name: BN Shortener
+description: Shorten links and run Launch Check on them in a workflow (b1.lc). Fails the job when a link is not ready.
+author: BroadNet Technologies LLC
+branding:
+  icon: link
+  color: blue
+inputs:
+  api-key:
+    description: BN Shortener API key (store it as a secret). Needs write to shorten / check.
+    required: true
+  command:
+    description: "shorten | check | run"
+    required: true
+  urls:
+    description: "shorten: destinations, one per line"
+    required: false
+  links:
+    description: "check: links to Launch Check (id, code or short URL), one per line"
+    required: false
+  title:
+    description: "shorten: title for the new links"
+    required: false
+  tags:
+    description: "shorten: comma-separated tags"
+    required: false
+  strict:
+    description: "check: also fail on warnings (true/false)"
+    required: false
+    default: "false"
+  args:
+    description: "run: arguments for the bn command, e.g. `stats AbC9 --json`"
+    required: false
+  base-url:
+    description: API base URL
+    required: false
+    default: https://b1.lc/api/v1
+outputs:
+  short-url:
+    description: "shorten: the first short URL"
+    value: ${{ steps.bn.outputs.short-url }}
+  short-urls:
+    description: "shorten: every short URL, one per line"
+    value: ${{ steps.bn.outputs.short-urls }}
+  verdict:
+    description: "check: the worst verdict (ready, warnings, not_ready)"
+    value: ${{ steps.bn.outputs.verdict }}
+  json:
+    description: Everything the command returned, as JSON
+    value: ${{ steps.bn.outputs.json }}
+runs:
+  using: composite
+  steps:
+    - id: bn
+      shell: bash
+      env:
+        BN_API_KEY: ${{ inputs.api-key }}
+        BN_BASE_URL: ${{ inputs.base-url }}
+        INPUT_COMMAND: ${{ inputs.command }}
+        INPUT_URLS: ${{ inputs.urls }}
+        INPUT_LINKS: ${{ inputs.links }}
+        INPUT_TITLE: ${{ inputs.title }}
+        INPUT_TAGS: ${{ inputs.tags }}
+        INPUT_STRICT: ${{ inputs.strict }}
+        INPUT_ARGS: ${{ inputs.args }}
+      run: bash "${{ github.action_path }}/run.sh"
